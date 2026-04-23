@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct crystallizedApp: App {
+    @StateObject private var thoughtScheduler = ThoughtScheduler()
+
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        MenuBarExtra("Crystallized", systemImage: "sparkles") {
+            ContentView(
+                thoughtGenerator: thoughtScheduler.thoughtGenerator,
+                webhookSender: thoughtScheduler.webhookSender
+            )
         }
+        .menuBarExtraStyle(.window)
     }
 }
