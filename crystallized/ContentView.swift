@@ -18,7 +18,7 @@ struct ContentView: View {
     @AppStorage("thoughtWebhookURL") private var webhookURL = ""
     @ObservedObject private var thoughtGenerator: ThoughtGenerator
     @ObservedObject private var webhookSender: WebhookSender
-    @State private var isSendThoughtsExpanded = false
+    @State private var isSettingsExpanded = false
     @State private var lastSeenAt = Date()
     @State private var now = Date()
 
@@ -40,12 +40,12 @@ struct ContentView: View {
             Divider()
 
             MenuRowButton(
-                "Send Thoughts",
-                trailingSystemImage: isSendThoughtsExpanded ? "chevron.down" : "chevron.right",
-                action: toggleSendThoughts
+                "Settings",
+                trailingSystemImage: isSettingsExpanded ? "chevron.down" : "chevron.right",
+                action: toggleSettings
             )
 
-            if isSendThoughtsExpanded {
+            if isSettingsExpanded {
                 WebhookSettings(
                     webhookURL: $webhookURL,
                     statusMessage: webhookSender.statusMessage
@@ -90,9 +90,9 @@ struct ContentView: View {
         return "\(days)d ago"
     }
 
-    private func toggleSendThoughts() {
+    private func toggleSettings() {
         withAnimation(.snappy(duration: 0.16)) {
-            isSendThoughtsExpanded.toggle()
+            isSettingsExpanded.toggle()
         }
     }
 }

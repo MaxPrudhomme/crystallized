@@ -16,10 +16,12 @@ final class ThoughtGenerator: ObservableObject {
     @Published private(set) var statusMessage: String?
 
     private let model: SystemLanguageModel?
-    private let prompt = "Write a fresh thought for someone taking a brief pause during focused work."
+    private let prompt = "Write one strange, cryptic thought for this exact moment."
     private let instructions = """
     You write short reflective thoughts for a quiet macOS menu bar app.
-    Respond with one or two sentences. Keep the tone clear, grounded, and useful.
+    Make each thought mystic, weird, and interesting, like a small omen found in the machinery of the day.
+    Avoid business-casual coaching, productivity advice, and obvious reassurance.
+    Respond with one or two compact sentences. Keep it vivid, elliptical, and human-readable.
     """
 
     var canGenerate: Bool {
