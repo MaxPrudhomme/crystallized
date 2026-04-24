@@ -16,7 +16,7 @@ final class WebhookSender: ObservableObject {
     @Published private(set) var isSending = false
     @Published private(set) var statusMessage: String?
 
-    func send(thought: String, to urlString: String) async {
+    func send(thought: String, to urlString: String, secretKey: String = "") async {
         guard !urlString.trimmed.isEmpty else {
             statusMessage = "Enter a webhook URL."
             return
@@ -38,7 +38,7 @@ final class WebhookSender: ObservableObject {
         }
 
         do {
-            let (_, response) = try await URLSession.shared.data(for: request(thought: thought, url: url))
+            let (_, response) = try await URLSession.shared.data(for: request(thought: thought, url: url, secretKey: secretKey))
             if let statusCode = response.failedHTTPStatusCode {
                 statusMessage = "POST failed with \(statusCode)."
             } else {
@@ -50,17 +50,18 @@ final class WebhookSender: ObservableObject {
         }
     }
 
-    private func request(thought: String, url: URL) throws -> URLRequest {
+    private func request(thought: String, url: URL, secretKey: String) throws -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONEncoder().encode(WebhookPayload(thought: thought))
+        request.httpBody = try JSONEncoder().encode(WebhookPayload(thought: thought, secretKey: secretKey.trimmed.nilIfEmpty))
         return request
     }
 }
 
 private struct WebhookPayload: Encodable {
     let thought: String
+    let secretKey: String?
 }
 
 private extension URL {
@@ -152,6 +153,10 @@ private enum SocketProbe {
 }
 
 private extension String {
+    var nilIfEmpty: String? {
+        isEmpty ? nil : self
+    }
+
     var isIPv4LoopbackAddress: Bool {
         self == "127.0.0.1" || hasPrefix("127.")
     }

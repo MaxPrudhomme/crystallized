@@ -12,11 +12,13 @@ struct crystallizedApp: App {
     @StateObject private var thoughtScheduler = ThoughtScheduler()
 
     var body: some Scene {
-        MenuBarExtra("Crystallized", systemImage: "sparkles") {
+        MenuBarExtra {
             ContentView(
                 thoughtGenerator: thoughtScheduler.thoughtGenerator,
                 webhookSender: thoughtScheduler.webhookSender
             )
+        } label: {
+            Label("Crystallized", image: "MenuBarIcon")
         }
         .menuBarExtraStyle(.window)
     }

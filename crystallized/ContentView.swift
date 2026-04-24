@@ -16,6 +16,7 @@ private enum MenuLayout {
 
 struct ContentView: View {
     @AppStorage("thoughtWebhookURL") private var webhookURL = ""
+    @AppStorage("thoughtWebhookSecretKey") private var webhookSecretKey = ""
     @ObservedObject private var thoughtGenerator: ThoughtGenerator
     @ObservedObject private var webhookSender: WebhookSender
     @State private var isSettingsExpanded = false
@@ -48,7 +49,7 @@ struct ContentView: View {
             if isSettingsExpanded {
                 WebhookSettings(
                     webhookURL: $webhookURL,
-                    statusMessage: webhookSender.statusMessage
+                    webhookSecretKey: $webhookSecretKey
                 )
             }
 
@@ -137,24 +138,15 @@ private struct ThoughtText: View {
 
 private struct WebhookSettings: View {
     @Binding var webhookURL: String
-    let statusMessage: String?
-
-    private var helperText: String {
-        webhookURL.isEmpty
-            ? "Add a URL once and thoughts will be posted automatically."
-            : "Webhook saved."
-    }
+    @Binding var webhookSecretKey: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             TextField("Webhook URL", text: $webhookURL)
                 .textFieldStyle(.roundedBorder)
 
-            SecondaryText(helperText)
-
-            if let statusMessage {
-                SecondaryText(statusMessage)
-            }
+            SecureField("Secret key (optional)", text: $webhookSecretKey)
+                .textFieldStyle(.roundedBorder)
         }
         .padding(.horizontal, 6)
         .padding(.top, 2)

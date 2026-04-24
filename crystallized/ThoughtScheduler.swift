@@ -9,6 +9,7 @@ import Combine
 import Foundation
 
 private let webhookURLKey = "thoughtWebhookURL"
+private let webhookSecretKeyKey = "thoughtWebhookSecretKey"
 
 @MainActor
 final class ThoughtScheduler: ObservableObject {
@@ -18,7 +19,7 @@ final class ThoughtScheduler: ObservableObject {
     private let generationDelayRange: ClosedRange<TimeInterval>
     private var task: Task<Void, Never>?
 
-    init(generationDelayRange: ClosedRange<TimeInterval> = 15 * 60...45 * 60) {
+    init(generationDelayRange: ClosedRange<TimeInterval> = 60 * 60...180 * 60) {
         self.thoughtGenerator = ThoughtGenerator()
         self.webhookSender = WebhookSender()
         self.generationDelayRange = Self.developmentDelayRange ?? generationDelayRange
@@ -29,7 +30,7 @@ final class ThoughtScheduler: ObservableObject {
     init(
         thoughtGenerator: ThoughtGenerator,
         webhookSender: WebhookSender,
-        generationDelayRange: ClosedRange<TimeInterval> = 15 * 60...45 * 60
+        generationDelayRange: ClosedRange<TimeInterval> = 60 * 60...180 * 60
     ) {
         self.thoughtGenerator = thoughtGenerator
         self.webhookSender = webhookSender
@@ -81,6 +82,7 @@ final class ThoughtScheduler: ObservableObject {
             return
         }
 
-        await webhookSender.send(thought: thoughtGenerator.thought, to: webhookURL)
+        let webhookSecretKey = UserDefaults.standard.string(forKey: webhookSecretKeyKey) ?? ""
+        await webhookSender.send(thought: thoughtGenerator.thought, to: webhookURL, secretKey: webhookSecretKey)
     }
 }
